@@ -67,6 +67,39 @@ st.set_page_config(page_title="Resume Optimizer", page_icon="📄")
 # --- CUSTOM DESIGN (CSS) ---
 st.markdown("""
 <style>
+    /* Make the title big and blue */
+    h1 {
+        color: #4F8BF9;
+        text-align: center;
+    }
+    /* Style the Optimize button to be wide and glowing */
+    .stButton>button {
+        width: 100%;
+        background-color: #4F8BF9;
+        color: white;
+        border-radius: 12px;
+        height: 50px;
+        font-size: 18px;
+        font-weight: bold;
+        border: none;
+        box-shadow: 0px 4px 15px rgba(79, 139, 249, 0.4);
+    }
+    .stButton>button:hover {
+        background-color: #3b6ccf;
+    }
+    /* Green Download Button */
+    .stDownloadButton>button {
+        width: 100%;
+        background-color: #28a745;
+        color: white;
+        border-radius: 12px;
+        font-weight: bold;
+    }
+</style>
+""", unsafe_allow_html=True)
+# --- CUSTOM DESIGN (CSS) ---
+st.markdown("""
+<style>
     /* Import a modern font */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
 
@@ -216,6 +249,7 @@ if st.button("✨ Optimize My CV"):
             except Exception as e:
 
                 st.error(f"AI Error: {e}")
+
 
 
 
