@@ -14,7 +14,7 @@ try:
     api_key = st.secrets["GOOGLE_API_KEY"]
     genai.configure(api_key=api_key)
     # Using the standard Flash model. If this gives an error, switch to 'gemini-pro'
-    model = genai.GenerativeModel('gemini-2.5-flash')
+    model = genai.GenerativeModel('gemini-2.5-pro')
 except Exception as e:
     st.error("Error: Could not connect to Google AI. Check your API Key in Streamlit Secrets.")
 
@@ -195,6 +195,7 @@ if st.button("✨ Optimize My CV"):
                 
             except Exception as e:
                 st.error(f"AI Error: {e}")
+
 
 
 
