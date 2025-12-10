@@ -64,7 +64,60 @@ def scrape_url(url):
 # --- THE APP DESIGN ---
 
 st.set_page_config(page_title="Resume Optimizer", page_icon="📄")
+# --- CUSTOM DESIGN (CSS) ---
+st.markdown("""
+<style>
+    /* Import a modern font */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
 
+    /* Apply font to whole app */
+    html, body, [class*="css"]  {
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Style the main title */
+    h1 {
+        color: #4F8BF9; /* Electric Blue */
+        font-weight: 700;
+        text-align: center;
+    }
+
+    /* Style the buttons */
+    .stButton>button {
+        width: 100%;
+        background-color: #4F8BF9;
+        color: white;
+        border-radius: 12px;
+        height: 50px;
+        font-size: 18px;
+        font-weight: 600;
+        border: none;
+        box-shadow: 0px 4px 15px rgba(79, 139, 249, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    /* Button hover effect */
+    .stButton>button:hover {
+        background-color: #3b6ccf;
+        transform: translateY(-2px);
+    }
+
+    /* Style the upload box */
+    [data-testid='stFileUploader'] {
+        background-color: #f0f2f6;
+        border-radius: 15px;
+        padding: 20px;
+    }
+    
+    /* Center the download button */
+    .stDownloadButton>button {
+        width: 100%;
+        background-color: #00CC66; /* Success Green */
+        color: white;
+        border-radius: 12px;
+    }
+</style>
+""", unsafe_allow_html=True)
 st.title("📄 AI Resume Optimizer")
 st.markdown("Upload your current resume and a job description. The AI will rewrite it for you.")
 
@@ -159,4 +212,5 @@ if st.button("✨ Optimize My CV"):
             except Exception as e:
 
                 st.error(f"AI Error: {e}")
+
 
