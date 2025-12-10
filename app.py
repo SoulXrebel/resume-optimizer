@@ -7,7 +7,7 @@ from io import BytesIO  # This helps us create files in memory
 
 # --- CONFIGURATION ---
 # 1. PASTE YOUR API KEY HERE
-api_key = st.secrets["AIzaSyCdke0RkptfFrV06PeTO4bTHOj_ckUvPBk"]
+api_key = st.secrets["GOOGLE_API_KEY"]
 
 # 2. Setup Google AI
 # We use 'gemini-1.5-flash' as it is the standard. 
@@ -159,3 +159,4 @@ if st.button("✨ Optimize My CV"):
             except Exception as e:
 
                 st.error(f"AI Error: {e}")
+
