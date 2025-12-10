@@ -160,20 +160,24 @@ if st.button("✨ Optimize My CV"):
     else:
         # Read the resume
         resume_text = read_word_doc(uploaded_file)
-        
-        # Prepare the prompt
+        # Prepare the prompt based on user choice
         final_prompt = ""
+        
         if mode == "Full Resume Rewrite":
             final_prompt = f"""
             Act as an expert Resume Writer. 
             STRICTLY OUTPUT ONLY THE RESUME CONTENT. 
             DO NOT Include conversational filler like "Here is the draft" or "I have optimized the resume".
             Start directly with the Candidate Name.
-
-            Generate a full resume draft tailored to this job description...
-            (rest of your code...)
+            
+            Generate a full resume draft tailored to this job description. 
+            Use my existing resume as a base for experience and skills.
+            Focus on highlighting the most relevant qualifications and incorporating keywords.
+            
+            My Resume: {resume_text}
+            Job Description: {jd_text}
             """
-            else:
+        else:
             final_prompt = f"""
             Act as an ATS (Applicant Tracking System) Specialist.
             Optimize my current resume by incorporating relevant keywords from the job description.
@@ -185,7 +189,7 @@ if st.button("✨ Optimize My CV"):
             1. List of Missing Keywords
             2. Rewritten Bullet Points
             """
-
+        
         # Ask AI
         with st.spinner("AI is writing your resume..."):
             try:
@@ -212,6 +216,7 @@ if st.button("✨ Optimize My CV"):
             except Exception as e:
 
                 st.error(f"AI Error: {e}")
+
 
 
 
