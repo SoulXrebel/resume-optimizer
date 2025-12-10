@@ -165,14 +165,14 @@ if st.button("✨ Optimize My CV"):
         final_prompt = ""
         if mode == "Full Resume Rewrite":
             final_prompt = f"""
-Act as an expert Resume Writer. 
-STRICTLY OUTPUT ONLY THE RESUME CONTENT. 
-DO NOT Include conversational filler like "Here is the draft" or "I have optimized the resume".
-Start directly with the Candidate Name.
+            Act as an expert Resume Writer. 
+            STRICTLY OUTPUT ONLY THE RESUME CONTENT. 
+            DO NOT Include conversational filler like "Here is the draft" or "I have optimized the resume".
+            Start directly with the Candidate Name.
 
-Generate a full resume draft tailored to this job description...
-(rest of your code...)
-"""
+            Generate a full resume draft tailored to this job description...
+            (rest of your code...)
+            """
             else:
             final_prompt = f"""
             Act as an ATS (Applicant Tracking System) Specialist.
@@ -212,6 +212,7 @@ Generate a full resume draft tailored to this job description...
             except Exception as e:
 
                 st.error(f"AI Error: {e}")
+
 
 
 
