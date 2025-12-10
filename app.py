@@ -3,25 +3,77 @@ import google.generativeai as genai
 from docx import Document
 import requests
 from bs4 import BeautifulSoup
-from io import BytesIO  # This helps us create files in memory
+from io import BytesIO
 
-# --- CONFIGURATION ---
-# 1. PASTE YOUR API KEY HERE
-api_key = st.secrets["GOOGLE_API_KEY"]
+# --- 1. CONFIGURATION ---
+st.set_page_config(page_title="Resume Optimizer", page_icon="📄")
 
-# 2. Setup Google AI
-# We use 'gemini-1.5-flash' as it is the standard. 
-# If this fails, try changing it to 'gemini-pro'
+# Access API Key from Secrets
+# (Make sure your Streamlit Secrets are set up correctly!)
 try:
+    api_key = st.secrets["GOOGLE_API_KEY"]
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-2.0-flash')
+    # Using the standard Flash model. If this gives an error, switch to 'gemini-pro'
+    model = genai.GenerativeModel('gemini-1.5-flash')
 except Exception as e:
-    st.error(f"Error setting up AI. Details: {e}")
+    st.error("Error: Could not connect to Google AI. Check your API Key in Streamlit Secrets.")
 
-# --- HELPER FUNCTIONS ---
+# --- 2. CUSTOM DESIGN (CSS) ---
+st.markdown("""
+<style>
+    /* Import modern font */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    
+    html, body, [class*="css"]  {
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Style the Header */
+    h1 {
+        color: #4F8BF9; /* Electric Blue */
+        text-align: center;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    /* Style the Subheader text */
+    .stMarkdown p {
+        text-align: center;
+        color: #b0b0b0;
+    }
+
+    /* Style the Optimize button */
+    .stButton>button {
+        width: 100%;
+        background-color: #4F8BF9;
+        color: white;
+        border-radius: 12px;
+        height: 50px;
+        font-size: 18px;
+        font-weight: 600;
+        border: none;
+        box-shadow: 0px 4px 15px rgba(79, 139, 249, 0.4);
+        margin-top: 20px;
+    }
+    .stButton>button:hover {
+        background-color: #3b6ccf;
+        transform: translateY(-2px);
+    }
+    
+    /* Green Download Button */
+    .stDownloadButton>button {
+        width: 100%;
+        background-color: #00CC66;
+        color: white;
+        border-radius: 12px;
+        font-weight: bold;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# --- 3. HELPER FUNCTIONS ---
 
 def read_word_doc(file):
-    """Reads text from the uploaded Word file"""
     try:
         doc = Document(file)
         full_text = []
@@ -32,24 +84,16 @@ def read_word_doc(file):
         return "Error reading document."
 
 def create_docx(text):
-    """Converts the AI text back into a Word Document for download"""
     doc = Document()
-    # Add a title
     doc.add_heading('Optimized Resume', 0)
-    
-    # Add the AI generated text
-    # We split by new lines to keep paragraphs clean
     for line in text.split('\n'):
         doc.add_paragraph(line)
-        
-    # Save to a memory buffer (not hard drive yet)
     buffer = BytesIO()
     doc.save(buffer)
     buffer.seek(0)
     return buffer
 
 def scrape_url(url):
-    """Gets text from a job website"""
     try:
         response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
         if response.status_code == 200:
@@ -61,44 +105,13 @@ def scrape_url(url):
     except:
         return None
 
-# --- THE APP DESIGN ---
+# --- 4. THE APP UI ---
 
-st.set_page_config(page_title="Resume Optimizer", page_icon="📄")
-# --- CUSTOM DESIGN (CSS) ---
-st.markdown("""
-<style>
-    /* Make the title big and blue */
-    h1 {
-        color: #4F8BF9;
-        text-align: center;
-    }
-    /* Style the Optimize button to be wide and glowing */
-    .stButton>button {
-        width: 100%;
-        background-color: #4F8BF9;
-        color: white;
-        border-radius: 12px;
-        height: 50px;
-        font-size: 18px;
-        font-weight: bold;
-        border: none;
-        box-shadow: 0px 4px 15px rgba(79, 139, 249, 0.4);
-    }
-    .stButton>button:hover {
-        background-color: #3b6ccf;
-    }
-    /* Green Download Button */
-    .stDownloadButton>button {
-        width: 100%;
-        background-color: #28a745;
-        color: white;
-        border-radius: 12px;
-        font-weight: bold;
-    }
-</style>
-""", unsafe_allow_html=True)
+# THIS WAS MISSING IN YOUR SCREENSHOT:
+st.title("📄 AI Resume Optimizer")
+st.markdown("Upload your current resume and a job description. The AI will rewrite it for you.")
 
-# Sidebar (Inputs)
+# Sidebar
 with st.sidebar:
     st.header("Step 1: Your Resume")
     uploaded_file = st.file_uploader("Upload Word Doc (.docx)", type=['docx'])
@@ -119,27 +132,22 @@ with st.sidebar:
                         jd_text = fetched_data
                         st.success("Job data loaded!")
                     else:
-                        st.error("Could not read URL. Please paste text manually.")
+                        st.error("Could not read URL.")
 
     st.header("Step 3: Choose Mode")
     mode = st.radio("Goal:", ["Full Resume Rewrite", "ATS Optimization Check"])
 
 # Main Logic
 if st.button("✨ Optimize My CV"):
-    # Error Checking
     if not uploaded_file:
         st.warning("Please upload a Resume.")
     elif not jd_text:
         st.warning("Please provide a Job Description.")
-    # The Trap Check (To ensure you pasted the key)
-    elif api_key == "PASTE_YOUR_GOOGLE_API_KEY_HERE":
-        st.error("You forgot to paste your API Key in the code file!")
     else:
-        # Read the resume
         resume_text = read_word_doc(uploaded_file)
-        # Prepare the prompt based on user choice
-        final_prompt = ""
         
+        # The PROMPT Logic
+        final_prompt = ""
         if mode == "Full Resume Rewrite":
             final_prompt = f"""
             Act as an expert Resume Writer. 
@@ -166,23 +174,18 @@ if st.button("✨ Optimize My CV"):
             1. List of Missing Keywords
             2. Rewritten Bullet Points
             """
-        
-        # Ask AI
-        with st.spinner("AI is writing your resume..."):
+
+        with st.spinner("AI is working its magic..."):
             try:
                 response = model.generate_content(final_prompt)
                 
-                # Show Result on Screen
                 st.subheader("Your Optimized Result")
                 st.markdown(response.text)
                 
-                # --- NEW: DOWNLOAD BUTTON ---
-                st.success("Optimization Complete! Download your file below.")
-                
-                # Convert the text to a Word Doc
+                # Download Button
+                st.success("Done! Download your file below.")
                 docx_file = create_docx(response.text)
                 
-                # Create the Download Button
                 st.download_button(
                     label="📥 Download as Word Doc",
                     data=docx_file,
@@ -191,12 +194,4 @@ if st.button("✨ Optimize My CV"):
                 )
                 
             except Exception as e:
-
                 st.error(f"AI Error: {e}")
-
-
-
-
-
-
-
